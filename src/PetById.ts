@@ -1,9 +1,16 @@
-export class PetById {
+import { PetstoreRequest } from './PetstoreRequest.js';
+
+export class PetById implements PetstoreRequest {
   constructor(readonly petId: number) {}
 
   path = () => `/v2/pet/${this.petId}`;
 
-  method(): 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' {
-    return 'GET';
-  }
+  method = ():
+    | 'GET'
+    | 'HEAD'
+    | 'POST'
+    | 'PUT'
+    | 'PATCH'
+    | 'DELETE'
+    | 'OPTIONS' => 'GET';
 }
