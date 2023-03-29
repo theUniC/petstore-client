@@ -3,7 +3,9 @@ import { PetById } from '../src/PetById.js';
 import { Petstore } from '../src/Petstore.js';
 import { PetsByStatus, PetStatus } from '../src/PetsByStatus.js';
 import { SpyingTransport } from '../src/SpyingTransport.js';
-import { Response } from 'node-fetch';
+import { AbortError, FetchError, Response } from 'node-fetch';
+import { HttpError } from '../src/HttpError.js';
+import { FailingTransport } from '../src/FailingTransport.js';
 
 describe('Petstore API', () => {
   it('should be able get pets by ID', async () => {
@@ -63,5 +65,47 @@ describe('Petstore API', () => {
       await petstore.send(new PetById(3));
       expect(spyingTransport.hasBeenExecuted).toBe(true);
     });
+  });
+
+  it('should handle errors properly', async () => {
+    const spyingTransport = new SpyingTransport(
+      new Response(
+        JSON.stringify({
+          code: 1,
+          type: 'error',
+          message: 'Pet not found',
+        }),
+        {
+          status: 404,
+          statusText: 'Not Found',
+        },
+      ),
+    );
+
+    const petstore = new Petstore(spyingTransport);
+    await expect(petstore.send(new PetById(-1))).rejects.toThrow(HttpError);
+  });
+
+  it('should handle abort errors properly', async () => {
+    const abortError = new AbortError('Abort error!');
+    const failingTransport = new FailingTransport(abortError);
+
+    const petstore = new Petstore(failingTransport);
+    await expect(petstore.send(new PetById(-1))).rejects.toThrow(
+      new HttpError(-1, 'Request was aborted', abortError),
+    );
+  });
+
+  it('should handle operational errors properly', async () => {
+    const operationalError = new FetchError('Operational Error', 'system', {
+      test: 'test',
+    });
+
+    const failingTransport = new FailingTransport(operationalError);
+
+    const petstore = new Petstore(failingTransport);
+    await expect(petstore.send(new PetById(-1))).rejects.toThrow(
+      new HttpError(-1, 'Operational error', operationalError),
+    );
   });
 });
