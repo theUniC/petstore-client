@@ -3,7 +3,7 @@ import { PetstoreRequest } from './PetstoreRequest.js';
 export class PetById implements PetstoreRequest {
   constructor(readonly petId: number) {}
 
-  path = () => `/v2/pet/${this.petId}`;
+  path = (): string => `/v2/pet/${this.petId}`;
 
   method = ():
     | 'GET'

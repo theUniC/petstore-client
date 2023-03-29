@@ -4,7 +4,7 @@ import { HttpError } from './HttpError.js';
 import { AbortError, FetchError } from 'node-fetch';
 
 export class Petstore {
-  constructor(readonly transport: Transport = new NodeFetchTransport()) {}
+  constructor(public transport: Transport = new NodeFetchTransport()) {}
 
   async send(request): Promise<Record<string, any>> {
     try {
