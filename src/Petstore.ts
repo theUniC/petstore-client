@@ -1,38 +1,30 @@
 import { Transport } from './Transport.js';
 import { NodeFetchTransport } from './NodeFetchTransport.js';
-import { HttpError } from './HttpError.js';
-import { AbortError, FetchError } from 'node-fetch';
+import { HttpClientException } from './HttpClientException.js';
 import { UnsupportedContentType } from './UnsupportedContentType.js';
 import { match } from 'ts-pattern';
 import { ContentType } from './PetstoreRequest.js';
+import { HttpServerException } from './HttpServerException.js';
 
 export class Petstore {
   constructor(public transport: Transport = new NodeFetchTransport()) {}
 
   async send(request): Promise<Record<string, any>> {
-    try {
-      const response = await this.transport.execute(request);
+    const response = await this.transport.execute(request);
 
-      if (response.ok) {
-        const contentType = response.headers.get('content-type');
-        return match(contentType as ContentType)
-          .with(ContentType.JSON, async () => await response.json())
-          .otherwise(() => {
-            throw new UnsupportedContentType(contentType);
-          });
-      }
-
-      throw new HttpError(response.status, response.statusText);
-    } catch (e) {
-      if (e instanceof AbortError) {
-        throw new HttpError(-1, 'Request was aborted', e);
-      }
-
-      if (e instanceof FetchError) {
-        throw new HttpError(-1, 'Operational error', e);
-      }
-
-      throw e;
+    if (response.ok) {
+      const contentType = response.headers.get('content-type');
+      return match(contentType as ContentType)
+        .with(ContentType.JSON, async () => await response.json())
+        .otherwise(() => {
+          throw new UnsupportedContentType(contentType);
+        });
     }
+
+    if (response.status >= 400 && response.status < 500) {
+      throw new HttpClientException(response.status, response.statusText);
+    }
+
+    throw new HttpServerException(response.status, response.statusText);
   }
 }

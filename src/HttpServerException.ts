@@ -1,4 +1,4 @@
-export class HttpError extends Error {
+export class HttpServerException extends Error {
   constructor(
     readonly statusCode: number,
     readonly statusText: string,
