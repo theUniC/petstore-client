@@ -5,6 +5,7 @@ import { UnsupportedContentType } from './UnsupportedContentType.js';
 import { match } from 'ts-pattern';
 import { ContentType } from './PetstoreRequest.js';
 import { HttpServerException } from './HttpServerException.js';
+import { XMLParser } from 'fast-xml-parser';
 
 export class Petstore {
   constructor(public transport: Transport = new NodeFetchTransport()) {}
@@ -14,8 +15,13 @@ export class Petstore {
 
     if (response.ok) {
       const contentType = response.headers.get('content-type');
-      return match(contentType as ContentType)
+      return match(contentType)
         .with(ContentType.JSON, async () => await response.json())
+        .with(ContentType.XML, async () =>
+          new XMLParser({ ignoreDeclaration: true }).parse(
+            await response.text(),
+          ),
+        )
         .otherwise(() => {
           throw new UnsupportedContentType(contentType);
         });

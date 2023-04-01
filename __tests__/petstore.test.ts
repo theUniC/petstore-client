@@ -7,6 +7,7 @@ import { Response } from 'node-fetch';
 import { HttpClientException } from '../src/HttpClientException.js';
 import { UnsupportedContentType } from '../src/UnsupportedContentType.js';
 import { HttpServerException } from '../src/HttpServerException.js';
+import { ContentType } from '../src/PetstoreRequest.js';
 
 describe('Petstore API client', () => {
   let petstore: Petstore;
@@ -18,8 +19,7 @@ describe('Petstore API client', () => {
   });
 
   it('Should be able get pets by ID', async (): Promise<void> => {
-    const petId = 4;
-    const request = new PetById(petId);
+    const request = new PetById(4);
     const expectedJson = {
       id: 4,
       category: {
@@ -157,5 +157,40 @@ describe('Petstore API client', () => {
     await expect(petstore.send(new PetById(-1))).rejects.toThrow(
       new UnsupportedContentType(expectedContentType),
     );
+  });
+
+  it('Should be able to do requests in XML format', async () => {
+    const request = new PetById(4, ContentType.XML);
+    const expectedJson = {
+      Pet: {
+        id: 5,
+        category: {
+          id: 0,
+          name: 'string',
+        },
+        name: 'doggie',
+        photoUrls: {
+          photoUrl: 'string',
+        },
+        tags: {
+          tag: {
+            id: 0,
+            name: 'string',
+          },
+        },
+        status: 'string',
+      },
+    };
+
+    transport.responseToReturn = new Response(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Pet><category><id>0</id><name>string</name></category><id>5</id><name>doggie</name><photoUrls><photoUrl>string</photoUrl></photoUrls><status>string</status><tags><tag><id>0</id><name>string</name></tag></tags></Pet>',
+      {
+        headers: { 'Content-Type': 'application/xml' },
+      },
+    );
+
+    const pet = await petstore.send(request);
+
+    expect(pet).toMatchObject(expectedJson);
   });
 });

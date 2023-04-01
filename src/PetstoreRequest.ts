@@ -1,5 +1,6 @@
 export enum ContentType {
   JSON = 'application/json',
+  XML = 'application/xml',
 }
 
 export interface PetstoreRequest {
