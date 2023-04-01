@@ -1,3 +1,7 @@
+export enum ContentType {
+  JSON = 'application/json',
+}
+
 export interface PetstoreRequest {
   path: () => string;
   method: () =>
@@ -8,4 +12,6 @@ export interface PetstoreRequest {
     | 'PATCH'
     | 'DELETE'
     | 'OPTIONS';
+
+  acceptHeader: () => ContentType;
 }

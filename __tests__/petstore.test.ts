@@ -6,6 +6,7 @@ import { SpyingTransport } from '../src/SpyingTransport.js';
 import { AbortError, FetchError, Response } from 'node-fetch';
 import { HttpError } from '../src/HttpError.js';
 import { FailingTransport } from '../src/FailingTransport.js';
+import { UnsupportedContentType } from '../src/UnsupportedContentType.js';
 
 describe('Petstore API', () => {
   let petstore: Petstore;
@@ -38,7 +39,9 @@ describe('Petstore API', () => {
       status: 'available',
     };
 
-    transport.responseToReturn = new Response(JSON.stringify(expectedJson));
+    transport.responseToReturn = new Response(JSON.stringify(expectedJson), {
+      headers: { 'Content-Type': 'application/json' },
+    });
 
     const pet = await petstore.send(request);
 
@@ -66,7 +69,9 @@ describe('Petstore API', () => {
       },
     ];
 
-    transport.responseToReturn = new Response(JSON.stringify(expectedJson));
+    transport.responseToReturn = new Response(JSON.stringify(expectedJson), {
+      headers: { 'Content-Type': 'application/json' },
+    });
 
     const pets = await petstore.send(request);
 
@@ -92,7 +97,9 @@ describe('Petstore API', () => {
         status: 'string',
       };
 
-      transport.responseToReturn = new Response(JSON.stringify(expectedJson));
+      transport.responseToReturn = new Response(JSON.stringify(expectedJson), {
+        headers: { 'Content-Type': 'application/json' },
+      });
 
       await petstore.send(new PetById(3));
 
@@ -136,6 +143,18 @@ describe('Petstore API', () => {
 
     await expect(petstore.send(new PetById(-1))).rejects.toThrow(
       new HttpError(-1, 'Operational error', operationalError),
+    );
+  });
+
+  it('should throw an exception when content type header returned by response is not expected', async () => {
+    const expectedContentType = 'text/plain';
+
+    transport.responseToReturn = new Response('test', {
+      headers: { 'Content-Type': expectedContentType },
+    });
+
+    await expect(petstore.send(new PetById(-1))).rejects.toThrow(
+      new UnsupportedContentType(expectedContentType),
     );
   });
 });
