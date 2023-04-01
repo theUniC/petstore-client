@@ -1,4 +1,4 @@
-import { ContentType, PetstoreRequest } from './PetstoreRequest.js';
+import { HttpMethod, PetstoreRequest } from './PetstoreRequest.js';
 
 export enum PetStatus {
   AVAILABLE = 'available',
@@ -6,22 +6,11 @@ export enum PetStatus {
   SOLD = 'sold',
 }
 
-export class PetsByStatus implements PetstoreRequest {
-  constructor(
-    readonly status: PetStatus,
-    readonly contentType: ContentType = ContentType.JSON,
-  ) {}
+export class PetsByStatus extends PetstoreRequest<PetsByStatus> {
+  constructor(readonly status: PetStatus) {
+    super();
+  }
 
   path = (): string => `/v2/pet/findByStatus?status=${this.status}`;
-
-  method = ():
-    | 'GET'
-    | 'HEAD'
-    | 'POST'
-    | 'PUT'
-    | 'PATCH'
-    | 'DELETE'
-    | 'OPTIONS' => 'GET';
-
-  acceptHeader = (): ContentType => this.contentType;
+  method = (): HttpMethod => 'GET';
 }

@@ -1,5 +1,5 @@
 import { Response } from 'node-fetch';
-import { PetstoreRequest } from './PetstoreRequest.js';
+import { PetStoreRequests } from './PetstoreRequest.js';
 import { Transport } from './Transport.js';
 
 export class SpyingTransport implements Transport {
@@ -7,7 +7,7 @@ export class SpyingTransport implements Transport {
 
   constructor(public responseToReturn: Response = null) {}
 
-  async execute(_request: PetstoreRequest): Promise<Response> {
+  async execute(_request: PetStoreRequests): Promise<Response> {
     this.hasBeenExecuted = true;
     return Promise.resolve(this.responseToReturn);
   }

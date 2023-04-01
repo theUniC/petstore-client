@@ -160,7 +160,7 @@ describe('Petstore API client', () => {
   });
 
   it('Should be able to do requests in XML format', async () => {
-    const request = new PetById(4, ContentType.XML);
+    const request = new PetById(4).withAcceptHeader(ContentType.XML);
     const expectedJson = {
       Pet: {
         id: 5,
