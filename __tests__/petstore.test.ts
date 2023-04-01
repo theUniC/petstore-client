@@ -8,6 +8,7 @@ import { HttpClientException } from '../src/HttpClientException.js';
 import { UnsupportedContentType } from '../src/UnsupportedContentType.js';
 import { HttpServerException } from '../src/HttpServerException.js';
 import { ContentType } from '../src/PetstoreRequest.js';
+import { NodeFetchTransport } from '../src/NodeFetchTransport.js';
 
 describe('Petstore API client', () => {
   let petstore: Petstore;
@@ -192,5 +193,21 @@ describe('Petstore API client', () => {
     const pet = await petstore.send(request);
 
     expect(pet).toMatchObject(expectedJson);
+  });
+
+  describe('NodeFetchTransport', () => {
+    it('should be able to do JSON requests', async () => {
+      petstore.transport = new NodeFetchTransport();
+      const result = petstore.send(new PetsByStatus(PetStatus.SOLD));
+      expect(result).not.toBeNull();
+    });
+
+    it('should be able to do XML requests', async () => {
+      petstore.transport = new NodeFetchTransport();
+      const result = petstore.send(
+        new PetsByStatus(PetStatus.SOLD).withAcceptHeader(ContentType.XML),
+      );
+      expect(result).not.toBeNull();
+    });
   });
 });
