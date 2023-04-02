@@ -161,7 +161,7 @@ describe('Petstore API client', () => {
     );
   });
 
-  it('Should validate types at runtime', async () => {
+  it('Should validate response type at runtime', async () => {
     transport.responseToReturn = new Response(
       JSON.stringify({ test: 'test' }),
       {
