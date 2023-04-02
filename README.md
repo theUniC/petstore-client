@@ -16,12 +16,11 @@
   * A response with an unexpected format raises an [UnexpectedResponseFormatException](src/exceptions/UnsupportedContentTypeException.ts)
 * Responses are validated both at compile-time and at runtime using **[Zod](https://zod.dev/)**.
 * Scalability by design
-  * _Dependency Injection & Dependency Inversion Principle_. I used dependency injection in the `Petstore` class to make the code loose coupled and able to be used in nearly all environments with the transports abstraction. Dependency Inversion Principle have been used to make the code as general as possible and to not depend on concret implementations like `fetch` and depend on more high level abstractions (like [`Transport`](src/transports/Transport.ts)) that can be interchanged at runtime.
+  * _Dependency Injection & Dependency Inversion Principle_. I used dependency injection in the `Petstore` class to make the code loose coupled and able to be used in nearly all environments with the transports abstraction. Dependency Inversion Principle have been used to make the code as general as possible and to not depend on concret implementations like `fetch` and depend on more high level abstractions (like [`Transport`](src/transports/Transport.ts)) that can be switched at runtime.
   * I introduced a `Transport` abstraction as an implementation of an Adapter pattern in order to decouple from low level modules like `fetch`. So then when NodeJs fetch API reach an stable phase, it will be just a matter of creating a new `Transport` implementation with the new implementation.
-
 ```typescript
-import {Transport} from "./Transport";
-import {PetStoreRequests} from "./PetstoreRequest";
+import { Transport } from "./Transport";
+import { PetStoreRequests } from "./PetstoreRequest";
 
 export class NativeFetchTransport implements Transport {
   constructor(private baseUrl: string) {}
@@ -36,9 +35,31 @@ export class NativeFetchTransport implements Transport {
   }
 }
 ```
+  * It's easy to add new Requests from the Petstore API by just implementing the class `PetstoreRequest` and add the new request to the list of supported requests at file [PetstoreRequest.ts](https://github.com/theUniC/petstore-client/blob/main/src/requests/PetstoreRequest.ts#L13).
+```typescript
+import { HttpMethod, PetstoreRequest } from './PetstoreRequest.js';
 
-  * Requests
-  * Responses
+export class PurchaseOrderById implements PetstoreRequest {
+  constructor(readonly purchaseOrderId: number) {}
+  path = (): string => `/v2/store/order/${this.purchaseOrderId}`;
+  method = (): HttpMethod => 'GET';
+}
+```
+  * New responses can be added using Zod, and defining a new schema for the response and then add the new response model to list of supported responses at the file `[Petstore.ts](https://github.com/theUniC/petstore-client/blob/main/src/Petstore.ts#L10)`
+
+```typescript
+import { z } from 'zod';
+
+export const PurchaseOrder = z.object({
+  id: z.number(),
+  petId: z.number(),
+  quantity: z.number(),
+  shipDate: z.string(),
+  status: z.literal("placed").or(z.literal("approved")).or(z.literal("delivered"))
+});
+
+export type PurchaseOrder = z.infer<typeof PurchaseOrder>;
+```
 
 ## Local development environment
 
