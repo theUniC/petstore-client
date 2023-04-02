@@ -1,9 +1,9 @@
-import { expect } from '@jest/globals';
+import { expect, it } from '@jest/globals';
 import { PetById } from '../src/requests/PetById.js';
 import { Petstore } from '../src/Petstore.js';
 import { PetsByStatus, PetStatus } from '../src/requests/PetsByStatus.js';
 import { SpyingTransport } from '../src/transports/SpyingTransport.js';
-import { Response } from 'node-fetch';
+import { FetchError, Response } from 'node-fetch';
 import { HttpClientException } from '../src/exceptions/HttpClientException.js';
 import { UnsupportedContentTypeException } from '../src/exceptions/UnsupportedContentTypeException.js';
 import { HttpServerException } from '../src/exceptions/HttpServerException.js';
@@ -176,9 +176,17 @@ describe('Petstore API client', () => {
     );
   });
 
+  it('should be able to configure base URL', async () => {
+    petstore = new Petstore(new NodeFetchTransport('http://localhost'));
+
+    await expect(petstore.send(new PetById(4), Pet)).rejects.toThrow(
+      FetchError,
+    );
+  });
+
   describe('NodeFetchTransport', () => {
     it('should be able to do requests', async () => {
-      petstore.transport = new NodeFetchTransport();
+      petstore.transport = new NodeFetchTransport('http://localhost:8080');
       const result = petstore.send(new PetsByStatus(PetStatus.PENDING), Pets);
       expect(result).not.toBeNull();
     });

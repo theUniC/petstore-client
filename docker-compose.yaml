@@ -1,5 +1,12 @@
 version: "3.9"
 
 services:
+  petstore_backend:
+    image: swaggerapi/petstore
+    ports:
+      - "8080:8080"
+    environment:
+      SWAGGER_HOST: http://petstore.swagger.io
+      SWAGGER_URL: http://localhost:8080
   petstore_client:
     build: .

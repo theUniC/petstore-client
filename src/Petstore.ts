@@ -1,5 +1,4 @@
 import { Transport } from './transports/Transport.js';
-import { NodeFetchTransport } from './transports/NodeFetchTransport.js';
 import { HttpClientException } from './exceptions/HttpClientException.js';
 import { PetStoreRequests } from './requests/PetstoreRequest.js';
 import { HttpServerException } from './exceptions/HttpServerException.js';
@@ -11,11 +10,11 @@ import { UnsupportedContentTypeException } from './exceptions/UnsupportedContent
 type PetstoreResponses = Pet | Pet[];
 
 export class Petstore {
-  constructor(public transport: Transport = new NodeFetchTransport()) {}
+  constructor(public transport: Transport) {}
 
   async send<T extends z.ZodType<PetstoreResponses>>(
     request: PetStoreRequests,
-    expected: T,
+    expectedSchema: T,
   ): Promise<z.infer<T>> {
     const response = await this.transport.execute(request);
 
@@ -29,7 +28,7 @@ export class Petstore {
       const data = await response.json();
 
       try {
-        return await expected.parseAsync(data);
+        return await expectedSchema.parseAsync(data);
       } catch (zodError) {
         if (zodError instanceof ZodError) {
           throw new UnexpectedResponseFormatException(

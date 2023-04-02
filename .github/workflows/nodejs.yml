@@ -15,6 +15,7 @@ jobs:
         with:
           node-version-file: '.node-version'
           cache: 'pnpm'
+      - run: docker compose up -d
       - run: pnpm install --frozen-lockfile
       - run: pnpm run --if-present lint
       - run: pnpm test
