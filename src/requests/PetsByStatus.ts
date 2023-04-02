@@ -9,6 +9,6 @@ export enum PetStatus {
 export class PetsByStatus implements PetstoreRequest {
   constructor(readonly status: PetStatus) {}
 
-  path = (): string => `/v2/pet/findByStatus?status=${this.status}`;
+  path = (): string => `/pet/findByStatus?status=${this.status}`;
   method = (): HttpMethod => 'GET';
 }

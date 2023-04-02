@@ -186,7 +186,9 @@ describe('Petstore API client', () => {
 
   describe('NodeFetchTransport', () => {
     it('should be able to do requests', async () => {
-      petstore.transport = new NodeFetchTransport('http://localhost:8080/api');
+      petstore.transport = new NodeFetchTransport(
+        'http://localhost:8080/api/v2',
+      );
       const result = await petstore.send(
         new PetsByStatus(PetStatus.PENDING),
         Pets,
