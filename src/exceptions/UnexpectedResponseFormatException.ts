@@ -1,4 +1,4 @@
-import { PetStoreRequests } from './PetstoreRequest.js';
+import { PetStoreRequests } from '../requests/PetstoreRequest.js';
 
 export class UnexpectedResponseFormatException extends Error {
   constructor(request: PetStoreRequests, zodErrorMessage: string) {

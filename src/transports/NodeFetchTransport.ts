@@ -1,4 +1,4 @@
-import { PetStoreRequests } from './PetstoreRequest.js';
+import { PetStoreRequests } from '../requests/PetstoreRequest.js';
 import fetch, { Response } from 'node-fetch';
 import { Transport } from './Transport.js';
 

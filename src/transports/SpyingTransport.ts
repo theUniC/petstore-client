@@ -1,5 +1,5 @@
 import { Response } from 'node-fetch';
-import { PetStoreRequests } from './PetstoreRequest.js';
+import { PetStoreRequests } from '../requests/PetstoreRequest.js';
 import { Transport } from './Transport.js';
 
 export class SpyingTransport implements Transport {

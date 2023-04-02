@@ -1,15 +1,15 @@
 import { expect } from '@jest/globals';
-import { PetById } from '../src/PetById.js';
+import { PetById } from '../src/requests/PetById.js';
 import { Petstore } from '../src/Petstore.js';
-import { PetsByStatus, PetStatus } from '../src/PetsByStatus.js';
-import { SpyingTransport } from '../src/SpyingTransport.js';
+import { PetsByStatus, PetStatus } from '../src/requests/PetsByStatus.js';
+import { SpyingTransport } from '../src/transports/SpyingTransport.js';
 import { Response } from 'node-fetch';
-import { HttpClientException } from '../src/HttpClientException.js';
-import { UnsupportedContentTypeException } from '../src/UnsupportedContentTypeException.js';
-import { HttpServerException } from '../src/HttpServerException.js';
-import { NodeFetchTransport } from '../src/NodeFetchTransport.js';
-import { UnexpectedResponseFormatException } from '../src/UnexpectedResponseFormatException.js';
-import { Pet, Pets } from '../src/Pet.js';
+import { HttpClientException } from '../src/exceptions/HttpClientException.js';
+import { UnsupportedContentTypeException } from '../src/exceptions/UnsupportedContentTypeException.js';
+import { HttpServerException } from '../src/exceptions/HttpServerException.js';
+import { NodeFetchTransport } from '../src/transports/NodeFetchTransport.js';
+import { UnexpectedResponseFormatException } from '../src/exceptions/UnexpectedResponseFormatException.js';
+import { Pet, Pets } from '../src/responses/Pet.js';
 
 describe('Petstore API client', () => {
   let petstore: Petstore;

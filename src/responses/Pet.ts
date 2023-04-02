@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-const tag = z.object({
-  id: z.number(),
-  name: z.string(),
-});
 export const Pet = z.object({
   id: z.number(),
   category: z.object({
@@ -11,11 +7,13 @@ export const Pet = z.object({
     name: z.string(),
   }),
   name: z.string(),
-  photoUrls: z
-    .string()
-    .array()
-    .or(z.object({ photoUrl: z.string().or(z.string().array()) })),
-  tags: tag.array().or(z.object({ tag: tag }).or(tag.array())),
+  photoUrls: z.string().array(),
+  tags: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+    })
+    .array(),
   status: z.string(),
 });
 

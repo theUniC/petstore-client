@@ -1,12 +1,12 @@
-import { Transport } from './Transport.js';
-import { NodeFetchTransport } from './NodeFetchTransport.js';
-import { HttpClientException } from './HttpClientException.js';
-import { PetStoreRequests } from './PetstoreRequest.js';
-import { HttpServerException } from './HttpServerException.js';
+import { Transport } from './transports/Transport.js';
+import { NodeFetchTransport } from './transports/NodeFetchTransport.js';
+import { HttpClientException } from './exceptions/HttpClientException.js';
+import { PetStoreRequests } from './requests/PetstoreRequest.js';
+import { HttpServerException } from './exceptions/HttpServerException.js';
 import { z, ZodError } from 'zod';
-import { Pet } from './Pet.js';
-import { UnexpectedResponseFormatException } from './UnexpectedResponseFormatException.js';
-import { UnsupportedContentTypeException } from './UnsupportedContentTypeException.js';
+import { Pet } from './responses/Pet.js';
+import { UnexpectedResponseFormatException } from './exceptions/UnexpectedResponseFormatException.js';
+import { UnsupportedContentTypeException } from './exceptions/UnsupportedContentTypeException.js';
 
 type PetstoreResponses = Pet | Pet[];
 
