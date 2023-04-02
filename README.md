@@ -1,6 +1,6 @@
 # PetStore API Client
 
-## Implementation considerations
+## Implementation details
 
 * The design has been guided all by tests
   * Most of the time I used _[Obvious Implementation](https://relentlessdevelopment.wordpress.com/2014/06/18/make-it-run-make-it-right-the-three-implementation-strategies-of-tdd/)_, although sometimes I used _Fake it, til you make it_ with _Triangulation_ and TCR (_[test && commit || revert](https://medium.com/@kentbeck_7670/test-commit-revert-870bbd756864)_) when complexity grew and baby steps were uncertain (specially happened with the content negotiation feature).
