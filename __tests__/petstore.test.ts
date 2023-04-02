@@ -186,8 +186,11 @@ describe('Petstore API client', () => {
 
   describe('NodeFetchTransport', () => {
     it('should be able to do requests', async () => {
-      petstore.transport = new NodeFetchTransport('http://localhost:8080');
-      const result = petstore.send(new PetsByStatus(PetStatus.PENDING), Pets);
+      petstore.transport = new NodeFetchTransport('http://localhost:8080/api');
+      const result = await petstore.send(
+        new PetsByStatus(PetStatus.PENDING),
+        Pets,
+      );
       expect(result).not.toBeNull();
     });
   });

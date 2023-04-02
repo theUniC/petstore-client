@@ -8,6 +8,7 @@ services:
     environment:
       SWAGGER_HOST: http://petstore.swagger.io
       SWAGGER_URL: http://localhost:8080
+      SWAGGER_BASE_PATH: /api/v2
   petstore_client:
     build: .
     network_mode: host
