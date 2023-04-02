@@ -73,4 +73,16 @@ export type PurchaseOrder = z.infer<typeof PurchaseOrder>;
 
 ## Local development environment
 
-TBD
+I've added a small local environment based on Docker which includes 2 containers 👇
+
+* The Petstore backend. It listens for requests at the port 8080.
+* The petstore client. It's just a container with no foreground process intended to run tests without having to install all the dependencies at local host.
+
+To run it just
+
+    docker compose up -d
+
+And then you should be able to see the Petstore Swagger UI at the URL 👉 http://localhost:8080/. And then to access the container just run
+
+    docker compose run --rm petstore_client sh
+
