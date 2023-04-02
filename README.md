@@ -10,14 +10,33 @@
 * I used the package [node-fetch](https://github.com/node-fetch/node-fetch) as a fetch implementation, since the fetch API in NodeJS is still in an experimental phase.
 * In order to make the client simpler both at code level and at DX level, this client **only supports JSON responses**. At first, I implemented a very basic content negotiation. But almost inmediately I saw it was not worth the effort for two reasons: 1) It made the code extremely complex for 2) no benefit for the users of the client, since they would have to prepare they code for 2 different response models (the translation to an object from an XML response is different from a JSON response) having exactly the same information, increasing that way the complexity of their code. So for the sake of simplicity and to improve DX I get rid of the feature. Anyway, I created a branch (**[with-content-negotiation](https://github.com/theUniC/petstore-client/blob/with-content-negotiation/src/Petstore.ts#L27)**) in case you want to see how I have attempted to implement content negotiation.
 * Easy error handling. Clients can catch several types of errors / exceptions 👇
-  * 4xx responses raises an [HttpClientException](src/exceptions/HttpClientException.ts)
-  * 5xx responses raises an [HttpServerException](src/exceptions/HttpServerException.ts)
+  * 4xx responses raise an [HttpClientException](src/exceptions/HttpClientException.ts)
+  * 5xx responses raise an [HttpServerException](src/exceptions/HttpServerException.ts)
   * A response with a content type different from `application/json` raises an [UnsupportedContentTypeException](src/exceptions/UnsupportedContentTypeException.ts)
   * A response with an unexpected format raises an [UnexpectedResponseFormatException](src/exceptions/UnsupportedContentTypeException.ts)
-* Validation of responses both at compile-time and at runtime using Zod.
-* Scalable by design
-  * Dependency Injection & Dependency Inversion
-  * Transports
+* Responses are validated both at compile-time and at runtime using **[Zod](https://zod.dev/)**.
+* Scalability by design
+  * _Dependency Injection & Dependency Inversion Principle_. I used dependency injection in the `Petstore` class to make the code loose coupled and able to be used in nearly all environments with the transports abstraction. Dependency Inversion Principle have been used to make the code as general as possible and to not depend on concret implementations like `fetch` and depend on more high level abstractions (like [`Transport`](src/transports/Transport.ts)) that can be interchanged at runtime.
+  * I introduced a `Transport` abstraction as an implementation of an Adapter pattern in order to decouple from low level modules like `fetch`. So then when NodeJs fetch API reach an stable phase, it will be just a matter of creating a new `Transport` implementation with the new implementation.
+
+```typescript
+import {Transport} from "./Transport";
+import {PetStoreRequests} from "./PetstoreRequest";
+
+export class NativeFetchTransport implements Transport {
+  constructor(private baseUrl: string) {}
+  
+  async execute(request: PetStoreRequests): Promise<Response> {
+    return await fetch(`${this.baseUrl}${request.path()}`, {
+      method: request.method(),
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+  }
+}
+```
+
   * Requests
   * Responses
 
