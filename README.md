@@ -50,7 +50,7 @@ import { HttpMethod, PetstoreRequest } from './PetstoreRequest.js';
 
 export class PurchaseOrderById implements PetstoreRequest {
   constructor(readonly purchaseOrderId: number) {}
-  path = (): string => `/v2/store/order/${this.purchaseOrderId}`;
+  path = (): string => `/store/order/${this.purchaseOrderId}`;
   method = (): HttpMethod => 'GET';
 }
 ```
