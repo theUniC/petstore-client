@@ -6,12 +6,9 @@ export enum PetStatus {
   SOLD = 'sold',
 }
 
-export class PetsByStatus extends PetstoreRequest<PetsByStatus> {
-  constructor(readonly status: PetStatus) {
-    super();
-  }
+export class PetsByStatus implements PetstoreRequest {
+  constructor(readonly status: PetStatus) {}
 
   path = (): string => `/v2/pet/findByStatus?status=${this.status}`;
   method = (): HttpMethod => 'GET';
-  xmlPath = (): string => 'pets.Pet';
 }

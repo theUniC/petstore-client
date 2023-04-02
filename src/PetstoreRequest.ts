@@ -1,11 +1,6 @@
 import { PetsByStatus } from './PetsByStatus.js';
 import { PetById } from './PetById.js';
 
-export enum ContentType {
-  JSON = 'application/json',
-  XML = 'application/xml',
-}
-
 export type HttpMethod =
   | 'GET'
   | 'HEAD'
@@ -17,25 +12,7 @@ export type HttpMethod =
 
 export type PetStoreRequests = PetsByStatus | PetById;
 
-export abstract class PetstoreRequest<T extends PetStoreRequests> {
-  private _acceptHeader: ContentType = ContentType.JSON;
-
-  abstract path: () => string;
-  abstract method: () => HttpMethod;
-  abstract xmlPath: () => string;
-
-  get acceptHeader(): ContentType {
-    return this._acceptHeader;
-  }
-
-  withAcceptHeader(newAcceptHeader: ContentType): T {
-    const clone = Object.assign(
-      Object.create(Object.getPrototypeOf(this)),
-      this,
-    );
-
-    clone._acceptHeader = newAcceptHeader;
-
-    return clone;
-  }
+export interface PetstoreRequest {
+  path: () => string;
+  method: () => HttpMethod;
 }
