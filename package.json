@@ -28,7 +28,7 @@
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --verbose",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },

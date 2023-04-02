@@ -10,3 +10,6 @@ services:
       SWAGGER_URL: http://localhost:8080
   petstore_client:
     build: .
+    network_mode: host
+    volumes:
+      - ./:/srv/app
