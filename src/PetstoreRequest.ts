@@ -22,6 +22,7 @@ export abstract class PetstoreRequest<T extends PetStoreRequests> {
 
   abstract path: () => string;
   abstract method: () => HttpMethod;
+  abstract xmlPath: () => string;
 
   get acceptHeader(): ContentType {
     return this._acceptHeader;

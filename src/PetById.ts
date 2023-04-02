@@ -7,4 +7,5 @@ export class PetById extends PetstoreRequest<PetById> {
 
   path = (): string => `/v2/pet/${this.petId}`;
   method = (): HttpMethod => 'GET';
+  xmlPath = (): string => 'Pet';
 }

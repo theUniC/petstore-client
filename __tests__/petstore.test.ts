@@ -5,10 +5,12 @@ import { PetsByStatus, PetStatus } from '../src/PetsByStatus.js';
 import { SpyingTransport } from '../src/SpyingTransport.js';
 import { Response } from 'node-fetch';
 import { HttpClientException } from '../src/HttpClientException.js';
-import { UnsupportedContentType } from '../src/UnsupportedContentType.js';
+import { UnsupportedContentTypeException } from '../src/UnsupportedContentTypeException.js';
 import { HttpServerException } from '../src/HttpServerException.js';
 import { ContentType } from '../src/PetstoreRequest.js';
 import { NodeFetchTransport } from '../src/NodeFetchTransport.js';
+import { UnexpectedResponseFormatException } from '../src/UnexpectedResponseFormatException.js';
+import { Pet, Pets } from '../src/Pet.js';
 
 describe('Petstore API client', () => {
   let petstore: Petstore;
@@ -42,7 +44,7 @@ describe('Petstore API client', () => {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    const pet = await petstore.send(request);
+    const pet = await petstore.send(request, Pet);
 
     expect(pet).toMatchObject(expectedJson);
   });
@@ -72,7 +74,7 @@ describe('Petstore API client', () => {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    const pets = await petstore.send(request);
+    const pets = await petstore.send(request, Pets);
 
     expect(pets).toBeInstanceOf(Array);
   });
@@ -100,7 +102,7 @@ describe('Petstore API client', () => {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      await petstore.send(new PetById(3));
+      await petstore.send(new PetById(3), Pet);
 
       expect(transport.hasBeenExecuted).toBe(true);
     });
@@ -122,7 +124,7 @@ describe('Petstore API client', () => {
         },
       );
 
-      await expect(petstore.send(new PetById(-1))).rejects.toThrow(
+      await expect(petstore.send(new PetById(-1), Pet)).rejects.toThrow(
         HttpClientException,
       );
     });
@@ -141,7 +143,7 @@ describe('Petstore API client', () => {
           },
         );
 
-        await expect(petstore.send(new PetById(-1))).rejects.toThrow(
+        await expect(petstore.send(new PetById(-1), Pet)).rejects.toThrow(
           HttpServerException,
         );
       },
@@ -155,32 +157,30 @@ describe('Petstore API client', () => {
       headers: { 'Content-Type': expectedContentType },
     });
 
-    await expect(petstore.send(new PetById(-1))).rejects.toThrow(
-      new UnsupportedContentType(expectedContentType),
+    await expect(petstore.send(new PetById(-1), Pet)).rejects.toThrow(
+      new UnsupportedContentTypeException(expectedContentType),
     );
   });
 
   it('Should be able to do requests in XML format', async () => {
     const request = new PetById(4).withAcceptHeader(ContentType.XML);
     const expectedJson = {
-      Pet: {
-        id: 5,
-        category: {
+      id: 5,
+      category: {
+        id: 0,
+        name: 'string',
+      },
+      name: 'doggie',
+      photoUrls: {
+        photoUrl: 'string',
+      },
+      tags: {
+        tag: {
           id: 0,
           name: 'string',
         },
-        name: 'doggie',
-        photoUrls: {
-          photoUrl: 'string',
-        },
-        tags: {
-          tag: {
-            id: 0,
-            name: 'string',
-          },
-        },
-        status: 'string',
       },
+      status: 'string',
     };
 
     transport.responseToReturn = new Response(
@@ -190,22 +190,53 @@ describe('Petstore API client', () => {
       },
     );
 
-    const pet = await petstore.send(request);
+    const pet = await petstore.send(request, Pet);
 
     expect(pet).toMatchObject(expectedJson);
+  });
+
+  it('Should validate types at runtime for JSON requests', async () => {
+    transport.responseToReturn = new Response(
+      JSON.stringify({ test: 'test' }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    await expect(petstore.send(new PetById(4), Pet)).rejects.toThrow(
+      UnexpectedResponseFormatException,
+    );
+  });
+
+  it('Should validate types at runtime for XML requests', async () => {
+    transport.responseToReturn = new Response(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><test>test</test>',
+      {
+        headers: {
+          'Content-Type': 'application/xml',
+        },
+      },
+    );
+
+    await expect(petstore.send(new PetById(4), Pet)).rejects.toThrow(
+      UnexpectedResponseFormatException,
+    );
   });
 
   describe('NodeFetchTransport', () => {
     it('should be able to do JSON requests', async () => {
       petstore.transport = new NodeFetchTransport();
-      const result = petstore.send(new PetsByStatus(PetStatus.SOLD));
+      const result = petstore.send(new PetsByStatus(PetStatus.PENDING), Pets);
       expect(result).not.toBeNull();
     });
 
     it('should be able to do XML requests', async () => {
       petstore.transport = new NodeFetchTransport();
       const result = petstore.send(
-        new PetsByStatus(PetStatus.SOLD).withAcceptHeader(ContentType.XML),
+        new PetsByStatus(PetStatus.PENDING).withAcceptHeader(ContentType.XML),
+        Pets,
       );
       expect(result).not.toBeNull();
     });

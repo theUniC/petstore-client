@@ -13,4 +13,5 @@ export class PetsByStatus extends PetstoreRequest<PetsByStatus> {
 
   path = (): string => `/v2/pet/findByStatus?status=${this.status}`;
   method = (): HttpMethod => 'GET';
+  xmlPath = (): string => 'pets.Pet';
 }
