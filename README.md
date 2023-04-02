@@ -45,7 +45,7 @@ export class PurchaseOrderById implements PetstoreRequest {
   method = (): HttpMethod => 'GET';
 }
 ```
-  * New responses can be added using Zod, and defining a new schema for the response and then add the new response model to list of supported responses at the file `[Petstore.ts](https://github.com/theUniC/petstore-client/blob/main/src/Petstore.ts#L10)`
+  * New responses can be added using Zod, and defining a new schema for the response and then add the new response model to list of supported responses at the file [Petstore.ts](https://github.com/theUniC/petstore-client/blob/main/src/Petstore.ts#L10)
 
 ```typescript
 import { z } from 'zod';
