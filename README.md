@@ -9,7 +9,11 @@
 * Nearly **[100% code coverage](https://theunic.github.io/petstore-client/)**.
 * I used the package [node-fetch](https://github.com/node-fetch/node-fetch) as a fetch implementation, since the fetch API in NodeJS is still in an experimental phase.
 * In order to make the client simpler both at code level and at DX level, this client **only supports JSON responses**. At first, I implemented a very basic content negotiation. But almost inmediately I saw it was not worth the effort for two reasons: 1) It made the code extremely complex for 2) no benefit for the users of the client, since they would have to prepare they code for 2 different response models (the translation to an object from an XML response is different from a JSON response) having exactly the same information, increasing that way the complexity of their code. So for the sake of simplicity and to improve DX I get rid of the feature. Anyway, I created a branch (**[with-content-negotiation](https://github.com/theUniC/petstore-client/blob/with-content-negotiation/src/Petstore.ts#L27)**) in case you want to see how I have attempted to implement content negotiation.
-* Easy error handling for clients.
+* Easy error handling. Clients can catch several types of errors / exceptions 👇
+  * 4xx responses raises an [HttpClientException](src/exceptions/HttpClientException.ts)
+  * 5xx responses raises an [HttpServerException](src/exceptions/HttpServerException.ts)
+  * A response with a content type different from `application/json` raises an [UnsupportedContentTypeException](src/exceptions/UnsupportedContentTypeException.ts)
+  * A response with an unexpected format raises an [UnexpectedResponseFormatException](src/exceptions/UnsupportedContentTypeException.ts)
 * Validation of responses both at compile-time and at runtime using Zod.
 * Scalable by design
   * Dependency Injection & Dependency Inversion
